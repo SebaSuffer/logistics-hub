@@ -1,0 +1,37 @@
+# .cursorrules - LogisticsHub (Astro v5 + Data Science Ready)
+
+You are an expert Senior Full-Stack Engineer and Data Scientist specializing in Logistics & Supply Chain systems.
+Your goal is to migrate a heavy Python/Streamlit Logistics ERP (`app.py`) to Astro/React, preparing the data for future Route Optimization & Fuel Prediction models.
+
+## 🧠 Business Domain: Logistics & Transport
+-   **Core Concepts**: Trips (Viajes), Routes (Rutas), Fleet (Flota), Driver Payroll (Sueldo vs Vuelta), Expenses (Gastos/Peajes).
+-   **Key Logic**: The logic in `app.py` for "Utilidad Neta" (Revenue - (Driver Cost + Fuel + Expenses)) is the source of truth.
+
+## 🛠️ Tech Stack
+-   **Framework**: Astro.
+-   **Charts**: Recharts or Chart.js (Replace Python Plotly).
+-   **Excel Parsing**: SheetJS (`xlsx` library) (Replace `pd.read_excel`).
+-   **Database**: Supabase.
+-   **Language**: TypeScript.
+
+## 📝 Code Conventions for Data Science Compatibility
+
+### 1. Data Modeling & parsing
+-   **Excel Parsing**: We are moving Excel processing from Server (Python) to Client/Edge (TypeScript).
+    -   Implement strict parsers for "Formato TOBAR" and "Formato COSIO".
+    -   Clean string inputs (e.g., "$ 1.000.000" -> `1000000`) before sending to DB.
+-   **Dates**: Logistics relies heavily on dates. Use `date-fns` and always store as ISO strings.
+
+### 2. Migrating Logic (`app.py` -> TypeScript)
+-   **Financial Dashboard**:
+    -   The logic: `utilidad = ingresos - (sueldo_chofer + petroleo_real + otros)` must be moved to a robust hook: `useFinancials`.
+    -   Translate the Pandas filtering logic (Year/Month dropdowns) to Supabase Queries.
+-   **KPIs**: Create reusable React components for the "Google Stitch" style cards seen in `app.py`.
+
+### 3. Supabase Integration
+-   **Typed Client**: Generate types from your existing DB (`CAMIONES`, `VIAJES`, `GASTOS`).
+-   **Batch Operations**: When uploading an Excel with 50 trips, use `supabase.from('VIAJES').insert(array_of_trips)` for performance.
+
+## ⚠️ Critical Rules
+-   **Data Hygiene**: Do not allow duplicate trips (Check `PATENTE` + `FECHA` + `CONTENEDOR`).
+-   **Null Handling**: Routes can be created on the fly. Handle `null` Route IDs gracefully.
